@@ -1,4 +1,6 @@
 ---
+import PbImage from "./PbImage.astro";
+
 const event = Astro.props.event;
 ---
 
@@ -6,7 +8,7 @@ const event = Astro.props.event;
     class=`cards ${event.favori ? 'bg-yellow-200' : 'bg-white'} border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer`
     data-favori={event.favori}
 >
-
+    <PbImage record={event} imageField="imgUrl" />
     <div class="flex items-center gap-2 mb-2">
         <strong class="text-lg">{event.title}</strong>
     </div>

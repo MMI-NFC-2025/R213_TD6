@@ -1,19 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import EventCard from '../components/EventCard.astro';
+import { getEvents } from '../js/backend.mjs';
 
-const events = [
-    {
-        title: "Conférence sur les astres",
-        date: "Lundi 12 Juillet",
-        favori: true,
-    },
-    {
-        title: "Atelier sur les étoiles",
-        date: "Mardi 13 Juillet",
-        favori: false,
-    },
-];
+const events = await getEvents();
+console.log(events);
+
 ---
 
 <Layout title="Agenda">
