@@ -1,7 +1,7 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import EventCard from '../components/EventCard.astro';
-import { getEvents } from '../js/backend.mjs';
+import Layout from '../../layouts/Layout.astro';
+import EventCard from '../../components/EventCard.astro';
+import { getEvents } from '../../js/backend.mjs';
 
 const events = await getEvents();
 console.log(events);

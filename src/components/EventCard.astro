@@ -1,5 +1,6 @@
 ---
 import PbImage from "./PbImage.astro";
+import { formatDate } from "../js/utils.mjs";
 
 const event = Astro.props.event;
 ---
@@ -12,17 +13,19 @@ const event = Astro.props.event;
     <div class="flex items-center gap-2 mb-2">
         <strong class="text-lg">{event.title}</strong>
     </div>
-    <p class="text-gray-600 text-sm mb-4">{event.date}</p>
-    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition-colors">
-        Favori
-    </button>
-</div>q
+    <p class="text-gray-600 text-sm mb-4">{formatDate(event.date)}</p>
+
+    <a href={`/agenda/${event.id}`} class="ml-4 text-blue-500 hover:underline text-sm">
+        Voir les détails
+    </a>
+</div>
 
 <script>
     //@ts-nocheck
+    import { setFavori } from '../js/backend.mjs';
     const cards = document.querySelectorAll('.cards');
     cards.forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', async () => {
             const isFavori = card.dataset.favori === 'true';
             card.dataset.favori = !isFavori;
             if (!isFavori) {
@@ -32,6 +35,7 @@ const event = Astro.props.event;
                 card.classList.add('bg-white');
                 card.classList.remove('bg-yellow-200');
             }
+
         });
     });
 </script>
