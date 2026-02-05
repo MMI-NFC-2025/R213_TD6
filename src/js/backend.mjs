@@ -20,3 +20,14 @@ export async function getImageUrl(record, imageField) {
     return pb.files.getURL(record, record[imageField]);
 }
 
+export async function setFavori(eventId, isFavori) {
+    try {
+        const updatedEvent = await pb.collection("events").update(eventId, 
+            { favori: isFavori }
+        );
+        return updatedEvent;
+    } catch (error) {
+        console.error("Error setting favori status:", error);
+        return null;
+    }
+}

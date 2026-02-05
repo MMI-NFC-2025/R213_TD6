@@ -7,7 +7,7 @@ const event = Astro.props.event;
 
 <div
     class=`cards ${event.favori ? 'bg-yellow-200' : 'bg-white'} border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer`
-    data-favori={event.favori}
+    data-favori={event.favori} data-id={event.id}
 >
     <PbImage record={event} imageField="imgUrl" />
     <div class="flex items-center gap-2 mb-2">
@@ -22,7 +22,7 @@ const event = Astro.props.event;
 
 <script>
     //@ts-nocheck
-    import { setFavori } from '../js/backend.mjs';
+    import { setFavori } from "../js/backend.mjs";
     const cards = document.querySelectorAll('.cards');
     cards.forEach(card => {
         card.addEventListener('click', async () => {
@@ -35,7 +35,8 @@ const event = Astro.props.event;
                 card.classList.add('bg-white');
                 card.classList.remove('bg-yellow-200');
             }
-
+            const eventId = card.dataset.id;
+            await setFavori(eventId, !isFavori);
         });
     });
 </script>
