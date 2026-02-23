@@ -31,3 +31,18 @@ export async function setFavori(eventId, isFavori) {
         return null;
     }
 }
+
+export async function addEvent(data) {
+    try {
+        await pb.collection("events").create(data);
+        return {
+            success: true,
+            message: "L'événement a été ajouté avec succès.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: "Une erreur est survenue lors de l'ajout de l'événement : " + error,
+        };
+    }
+}

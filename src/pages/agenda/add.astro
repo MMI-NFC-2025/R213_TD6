@@ -1,0 +1,36 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import {addEvent} from "../../js/backend.mjs";
+
+let pbMessage = "";
+if(Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    console.log(formData);
+    const result = await addEvent(formData);
+    pbMessage = result.message;
+} else {
+    console.log("GET request");
+}
+---
+
+<Layout title="Ajouter un événement">
+    <h1 class="text-5xl text-cyan-700">Ajouter un événement</h1>
+    {pbMessage && <p class="text-green-500">{pbMessage}</p>}
+    
+    <form class="flex flex-col p-4" method="post" action="/agenda/add" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Titre" class="border my-4 p-2 rounded-md" />
+        <select name="categorie" class="border my-4 p-2">
+            <option value="Théâtre">Théâtre</option>
+            <option value="Musique">Musique</option>
+        </select>
+        <input type="text" name="excerpt" placeholder="Extrait" class="border my-4 p-2 rounded-md" />
+        <select name="lieu" class="border my-4 p-2">
+            <option value="Théâtre">Théâtre</option>
+            <option value="Conservatoire">Conservatoire</option>
+        </select>
+        <textarea name="description" placeholder="Description" class="border my-4 p-2 rounded-md"></textarea>
+        <input type="date" name="date" class="border my-4 p-2 rounded-md" />
+        <input type="file" name="imgUrl" class="border my-4 p-2 rounded-md" />
+        <input type="submit" value="Ajouter" class="bg-slate-500 rounded-lg p-5" />
+    </form>
+</Layout>
