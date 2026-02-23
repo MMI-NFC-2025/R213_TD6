@@ -15,7 +15,7 @@ if(Astro.request.method === "POST") {
     console.log(selectedCategory);
     if(selectedCategory && selectedCategory !== "Tout") {
         events = events.filter(ev => ev.categorie === selectedCategory);
-        categories = [selectedCategory, ... new Set(events.map(ev => ev.categorie))];
+        categories = [selectedCategory, ...categories.filter(cat => cat !== selectedCategory)];
     }
 }
 
