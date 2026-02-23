@@ -24,6 +24,7 @@ if(Astro.request.method === "POST") {
 
 <Layout title="Agenda">
     <h1>Event Agenda</h1>
+    <a href="/agenda/add" class="bg-slate-500 underline">Ajouter un événement</a>
     <form action="/agenda" method="post">
     <select name="categorie" class="border my-4 p-2">
         {categories.map(cat => (
