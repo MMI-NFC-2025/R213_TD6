@@ -2,14 +2,36 @@
 import Layout from '../../layouts/Layout.astro';
 import EventCard from '../../components/EventCard.astro';
 import { getEvents } from '../../js/backend.mjs';
+import { sequence } from 'astro:middleware';
 
-const events = await getEvents();
+let events = await getEvents();
 console.log(events);
+// let categories = ['Tout', 'Théâtre', 'Musique'];
+
+let categories = ['Tout', ... new Set(events.map(ev => ev.categorie))];
+if(Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    const selectedCategory = formData.get("categorie");
+    console.log(selectedCategory);
+    if(selectedCategory && selectedCategory !== "Tout") {
+        events = events.filter(ev => ev.categorie === selectedCategory);
+        categories = [selectedCategory, ... new Set(events.map(ev => ev.categorie))];
+    }
+}
+
 
 ---
 
 <Layout title="Agenda">
     <h1>Event Agenda</h1>
+    <form action="/agenda" method="post">
+    <select name="categorie" class="border my-4 p-2">
+        {categories.map(cat => (
+            <option value={cat}>{cat}</option>
+        ))}
+        <input type="submit" value="Filtrer" class="bg-slate-500 rounded-lg p-5" />
+    </select>
+    </form>
     {
         events.map( (ev) => (
             <p>{ev.Lieu}</p>

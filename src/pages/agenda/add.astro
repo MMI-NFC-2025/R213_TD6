@@ -6,8 +6,15 @@ let pbMessage = "";
 if(Astro.request.method === "POST") {
     const formData = await Astro.request.formData();
     console.log(formData);
-    const result = await addEvent(formData);
-    pbMessage = result.message;
+    const eventDate = new Date(formData.get("date")?.toString() || "");
+    if(eventDate < new Date()) {
+        pbMessage = "La date doit être dans le futur.";
+    } else {
+        const result = await addEvent(formData);
+        pbMessage = result.message;
+    }
+
+   
 } else {
     console.log("GET request");
 }
