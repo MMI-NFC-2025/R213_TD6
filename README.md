@@ -466,3 +466,113 @@ if(Astro.request.method === 'POST') {
     }
 }
 ```
+
+# TD 6
+
+**Objectif**: Créer une nouvelle page pour afficher les artistes et une route dynamique pour afficher la liste des événements par artiste. Le deuxième objectif est de créer un formulaire pour modifier les données des événements.
+
+- Créez le dossier `artistes` dans `src/pages` puis le fichier `index.astro` dans `src/pages/artistes`.
+  
+- Dans la page `index.astro`, affichez la liste des artistes. Utilisez la fonction vue dans le module R214.
+  
+- Ajoutez une route dynamique `artistes/[id].astro` pour afficher la liste des événements de chaque artiste.
+
+Ensuite, nous allons créer un formulaire pour modifier les données de la collection d'événements.
+
+- Créez la route dynamique `agenda/modify/[id].astro` qui permet de modifier un événement dans PocketBase. Cette page doit contenir le même formulaire que celui de la page `add.astro`.
+
+- Dans le frontmatter, récupérez les données de l'événement ayant comme id la valeur passée en paramètre :
+    ```js
+    const { id } = Astro.params;
+    let event = await getOneEvent(id);
+    if (!event) {
+        console.error(`Event with id ${id} not found`);
+        return Astro.redirect("/agenda");
+    }
+    ```
+
+    ```js
+    //backend.mjs
+    export async function getOneEvent(id) {
+        try {
+            const event = await pb.collection("events").getOne(id);
+            event.img = pb.files.getURL(event, event.imgUrl);
+            event.formattedDate = formatDate(event.date);
+            return event;
+        } catch (error) {
+            return null;
+        }
+    }
+    ```
+
+- Pour chaque balise `input` ou `select` du formulaire, définissez la valeur de l'attribut `value` comme celle de `event`. Par exemple :
+    ```html
+    <input type="text" name="title" placeholder="Titre" class="border my-4 p-2 rounded-md" value={event?.title} required/>
+    ```
+
+- Afin de pouvoir afficher, sélectionner et modifier l'artiste associé à l'événement, récupérez la liste des artistes. Ajoutez dans le frontmatter :
+    ```js
+    const artists = await allArtists();
+    ```
+
+    ```js
+    //backend.mjs
+    export async function allArtists() {
+        try {
+            let artists = await pb.collection("artists").getFullList();
+            return artists
+        } catch (error) {
+            console.error("error allArtists: ", error);
+            return null;
+        }
+    }
+    ```
+
+- Dans le formulaire, ajoutez la balise `select` qui permet de modifier l'artiste :
+    ```html
+    <select name="artist" class="border my-4 p-2">
+        {
+            artists?.map((artist) => (
+                <option value={artist.id} selected={event.artist == artist.id}>{artist.first_name} {artist.last_name}</option>
+            ))
+        }
+    </select>
+    ```
+
+- Traitez les données envoyées pour modifier l'événement dans PocketBase :
+    ```js
+    if (Astro.request.method == "POST") {
+        const data = await Astro.request.formData();
+        console.log(data);
+        if (new Date(data.get("date")?.toString() || 0) < new Date()) {
+            pbMessage = "La date de l'événement doit être supérieure à la date d'aujourd'hui";
+        } else {
+            const response = await updateEvent(event.id, data);
+            event = response.event;
+            if (!event) {
+                console.error(`Event with id ${id} not found`);
+                return Astro.redirect("/agenda");
+            }
+            pbMessage = response.message;
+        }
+    }
+    ```
+
+    ```js
+    export async function updateEvent(id, data) {
+        try {
+            const event = await pb.collection("events").update(id, data);
+            return {
+                success: true,
+                event: event,
+                message: "L'événement a été modifié avec succès.",
+            };
+        } catch (error) {
+            return {
+                success: false,
+                event: null,
+                message: "Une erreur est survenue lors de la modification de l'événement: " + error,
+            };
+        }
+    }
+    ```
