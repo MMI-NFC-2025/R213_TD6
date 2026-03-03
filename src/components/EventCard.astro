@@ -14,7 +14,11 @@ const event = Astro.props.event;
         <strong class="text-lg">{event.title}</strong>
     </div>
     <p class="text-gray-600 text-sm mb-4">{formatDate(event.date)}</p>
-
+    <a href={`/agenda/modify/${event.id}`}>
+        <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+            Modifier
+        </button>
+    </a>
     <a href={`/agenda/${event.id}`} class="ml-4 text-blue-500 hover:underline text-sm">
         Voir les détails
     </a>

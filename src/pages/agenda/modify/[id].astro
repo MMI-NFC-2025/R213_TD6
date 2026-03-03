@@ -1,0 +1,88 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { updateEvent, getEventById } from "../../../js/backend.mjs";
+let pbMessage = "";
+
+const { id } = Astro.params;
+
+const event = await getEventById(id);
+
+if (Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    console.log(formData);
+    const eventDate = new Date(formData.get("date")?.toString() || "");
+    if (eventDate < new Date()) {
+        pbMessage = "La date doit être dans le futur.";
+    } else {
+        const result = await updateEvent(id, formData);
+        pbMessage = result.message;
+    }
+} else {
+    console.log("GET request");
+}
+---
+
+<Layout title="Modifier un événement">
+    <h1 class="text-5xl text-cyan-700">Modifier un événement</h1>
+    {pbMessage && <p class="text-green-500">{pbMessage}</p>}
+
+    <form class="flex flex-col p-4" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="id" value={event?.id} />
+        <input
+            type="text"
+            name="title"
+            value={event?.title}
+            placeholder="Titre"
+            class="border my-4 p-2 rounded-md"
+        />
+        <select name="categorie" class="border my-4 p-2">
+            <option value="Théâtre" selected={event.categorie === "Théâtre"}
+                >Théâtre</option
+            >
+            <option value="Musique" selected={event.categorie === "Musique"}
+                >Musique</option
+            >
+        </select>
+        <input
+            type="text"
+            name="excerpt"
+            value={event?.excerpt}
+            placeholder="Extrait"
+            class="border my-4 p-2 rounded-md"
+        />
+        <select name="lieu" class="border my-4 p-2">
+            <option value="Théâtre" selected={event.lieu === "Théâtre"}
+                >Théâtre</option
+            >
+            <option
+                value="Conservatoire"
+                selected={event.lieu === "Conservatoire"}>Conservatoire</option
+            >
+        </select>
+        <textarea
+            name="description"
+            placeholder="Description"
+            class="border my-4 p-2 rounded-md">{event?.description}</textarea
+        >
+        <input
+            type="date"
+            name="date"
+            value={new Date(event.date)
+                .toLocaleDateString("fr-FR", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                })
+                .split("/")
+                .reverse()
+                .join("-")}
+            class="border my-4 p-2 rounded-md"
+        />
+        <input type="file" name="imgUrl" class="border my-4 p-2 rounded-md" />
+        <input
+            type="submit"
+            value="Modifier"
+            class="bg-slate-500 rounded-lg p-5"
+        />
+    </form>
+</Layout>
